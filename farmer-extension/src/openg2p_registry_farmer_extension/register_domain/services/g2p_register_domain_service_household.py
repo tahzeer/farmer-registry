@@ -17,9 +17,9 @@ class G2PRegisterDomainServiceHousehold(G2PRegisterDomainService):
         male = as_int(record.get("number_of_male_members"))
         female = as_int(record.get("number_of_female_members"))
         if size_of_group is not None and male is not None and female is not None:
-            if size_of_group != male + female:
+            if male + female > size_of_group:
                 validation_error(
-                    "size_of_group must equal number_of_male_members + number_of_female_members"
+                    "number_of_male_members + number_of_female_members must not exceed size_of_group"
                 )
 
         children = as_int(record.get("number_of_children"))

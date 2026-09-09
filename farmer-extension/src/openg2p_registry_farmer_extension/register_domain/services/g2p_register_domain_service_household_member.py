@@ -1,9 +1,16 @@
 import logging
 from datetime import date
 
+from openg2p_registry_core.models import G2PRegisterChangeRequest
 from openg2p_registry_core.services import G2PRegisterDomainService
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .domain_validation_utils import is_blank, parse_date, validation_error
+from .utils.household_roster import (
+    CHANGED_PERSON_KIND_MEMBER,
+    recompute_household_for_ingested_row,
+    recompute_households_for_change_request,
+)
 
 _logger = logging.getLogger("g2p-register-domain-service")
 
@@ -81,3 +88,16 @@ class G2PRegisterDomainServiceHouseholdMember(G2PRegisterDomainService):
         )
 
         return " ".join(record_name).strip()
+
+    async def pre_approve(self, change_request: G2PRegisterChangeRequest, session: AsyncSession):
+        from ..models.household_member import G2PRegisterHouseholdMember
+
+        await recompute_households_for_change_request(
+            session,
+            change_request,
+            model=G2PRegisterHouseholdMember,
+            changed_person_kind=CHANGED_PERSON_KIND_MEMBER,
+        )
+
+    async def post_ingest(self, register_id: str, register_row, session: AsyncSession):
+        await recompute_household_for_ingested_row(session, register_row)

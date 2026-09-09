@@ -22,7 +22,11 @@ from .register_domain.models import (
     G2PIntakeFormCrop, G2PIntakeFormLand, G2PIntakeFormFarmInputs, 
     G2PIntakeFormLivestock, G2PIntakeFormMembershipDetails,
 )
-from .register_domain.services import G2PRegisterDomainServiceFarmer, G2PRegisterDomainServiceHousehold
+from .register_domain.services import (
+    G2PRegisterDomainServiceFarmer,
+    G2PRegisterDomainServiceHousehold,
+    G2PRegisterDomainServiceHouseholdMember,
+)
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
@@ -34,6 +38,7 @@ class Initializer(BaseInitializer):
 
         G2PRegisterDomainServiceFarmer()
         G2PRegisterDomainServiceHousehold()
+        G2PRegisterDomainServiceHouseholdMember()
 
     def migrate_database(self, args):
 
